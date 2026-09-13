@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://port-optimizer-api.onrender.com/api/:path*"
+    }
+  ]
+}
