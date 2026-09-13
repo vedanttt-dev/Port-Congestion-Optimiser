@@ -13,7 +13,7 @@ Before you begin, ensure you have the following installed:
 ## Project Structure
 
 ```
-ship-management/
+bob-ai-hackathon-Infinite-loop/
 ├── backend/           # Python FastAPI backend
 │   ├── app/           # Application source code
 │   ├── tests/         # 154 pytest tests
@@ -34,8 +34,8 @@ ship-management/
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/vedanttt-dev/ship-management.git
-cd ship-management
+git clone https://github.com/vedanttt-dev/bob-ai-hackathon-Infinite-loop.git
+cd bob-ai-hackathon-Infinite-loop
 
 # 2. Install backend dependencies
 cd backend
@@ -83,8 +83,7 @@ python -m pytest tests/ -v
 4. **Optimizer** — Before/after KPI comparison, berth assignment Gantt chart, reroute recommendations
 5. **Live Map** — WebSocket-driven vessel position tracking with satellite imagery
 6. **What-If Compare** — Side-by-side scenario comparison with delta summary
-7. **PDF Report** — One-click executive summary download
-8. **Mobile-Friendly** — Responsive layout with hamburger navigation
+7. **Mobile-Friendly** — Responsive layout with hamburger navigation
 
 ## Troubleshooting
 

@@ -10,7 +10,6 @@ graph TD
     C -->|SimPy| D[Discrete Event Simulation Engine]
     C -->|OR-Tools| E[CP-SAT Optimizer]
     C -->|Forward Sim| F[Monte Carlo Predictor]
-    C -->|ReportLab| G[PDF Report Generator]
     D -->|KPIs| C
     E -->|Assignments| C
     F -->|Forecasts| C
@@ -28,7 +27,6 @@ graph TD
 | Optimizer | Google OR-Tools CP-SAT | Integer constraint optimization for berth/crane assignment |
 | Forward Predictor | Custom Monte Carlo | Multi-trajectory simulation for congestion forecasting |
 | Shift Planner | Custom builder | 72-hour shift generation with work orders and contingencies |
-| PDF Generator | ReportLab 4.x | Executive summary PDF with tables and formatted sections |
 | Live Stream | WebSocket (FastAPI) | Real-time simulation state streaming with speed control |
 | Scenario Manager | Singleton service | Multi-scenario lifecycle: generate, compare, switch, delete |
 
@@ -48,7 +46,7 @@ graph TD
 - No authentication implemented (hackathon scope)
 - All data is synthetic/generated — no real port data
 - API keys and secrets handled via environment variables
-- CORS configured for local development
+- CORS configured for development and production (Vercel frontend)
 - No database — all state held in memory via singleton services
 
 ## Scalability Notes

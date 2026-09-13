@@ -33,8 +33,8 @@ The **Container Congestion Predictor & Port Operations Optimiser** is a full-sta
 │  └──────────┘ └──────────┘ └──────────┘ └──────────────────┘   │
 │                          │                                      │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐   │
-│  │ Scenario │ │ WebSocket│ │ KPI      │ │  PDF Report      │   │
-│  │ Manager  │ │ Live Feed│ │ Compute  │ │  Generator       │   │
+│  │ Scenario │ │ WebSocket│ │ KPI      │ │  Reroute Engine  │   │
+│  │ Manager  │ │ Live Feed│ │ Compute  │ │  & Recommender   │   │
 │  └──────────┘ └──────────┘ └──────────┘ └──────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```

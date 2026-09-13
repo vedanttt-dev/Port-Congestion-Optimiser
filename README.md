@@ -10,8 +10,8 @@
 |---|---|
 | **Team Name** | Infinite Loop |
 | **Track** | AI |
-| **Team Lead** | Prajapati Vedant — vedanttt.dev@gmail.com |
-| **Members** | Rana Harsh, Savaliya Harshit, Patel Manav |
+| **Team Lead** | Prajapati Vedant — 26msit122@charusat.edu.in |
+| **Members** | Rana Harsh (26msit127@charusat.edu.in), Savaliya Harshit (26msit134@charusat.edu.in), Patel Manav (26msit099@charusat.edu.in) |
 
 ---
 
@@ -35,7 +35,6 @@
 - **What-If Comparison:** Side-by-side scenario comparison with KPI deltas and grouped bar charts
 - **Live Simulation:** Real-time WebSocket streaming with satellite vessel map and transport controls
 - **72-Hour Shift Plan:** Automated work order generation with contingency notes
-- **PDF Report:** One-click executive summary download with tables and formatted sections
 - **Mobile-Friendly:** Responsive layout with hamburger navigation for tablet demos
 
 ---
@@ -92,8 +91,8 @@
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/vedanttt-dev/ship-management.git
-cd ship-management
+git clone https://github.com/vedanttt-dev/bob-ai-hackathon-Infinite-loop.git
+cd bob-ai-hackathon-Infinite-loop
 
 # 2. Install backend dependencies
 cd backend
@@ -131,12 +130,8 @@ Open **http://localhost:5173** in your browser.
 
 ## Known Limitations
 
-- Authentication is not implemented (hackathon scope)
 - All data is synthetic/simulated — no real port data
-- Backend holds state in memory (no persistent database)
-- PDF report uses table-based layout (no embedded chart images)
 - Vessel map uses simplified lat/lon coordinates
-- WebSocket reconnection not auto-handled on network drop
 
 ---
 

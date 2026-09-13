@@ -9,7 +9,7 @@ Follow these steps to set up your submission repository correctly.
 ## Step 1 — Repository Setup
 
 Repository is already set up at:
-`https://github.com/vedanttt-dev/ship-management`
+`https://github.com/vedanttt-dev/bob-ai-hackathon-Infinite-loop`
 
 ---
 

@@ -7,16 +7,16 @@ team:
   track: "AI"
   lead:
     name: "Prajapati Vedant"
-    email: "vedanttt.dev@gmail.com"
+    email: "26msit122@charusat.edu.in"
   members:
     - name: "Prajapati Vedant"
-      email: "vedanttt.dev@gmail.com"
+      email: "26msit122@charusat.edu.in"
     - name: "Rana Harsh"
-      email: "harshrana0299@gmail.com"
+      email: "26msit127@charusat.edu.in"
     - name: "Savaliya Harshit"
-      email: "harshitsavaliya99@gmail.com"
+      email: "26msit134@charusat.edu.in"
     - name: "Patel Manav"
-      email: ""
+      email: "26msit099@charusat.edu.in"
 
 submission:
   title: "Container Congestion Predictor & Port Operations Optimiser"
@@ -57,10 +57,8 @@ submission:
     lets managers evaluate infrastructure investments interactively.
 
   known_limitations: >
-    Authentication is not implemented (hackathon scope). All data is
-    synthetic/simulated — no real port data. Backend holds state in memory
-    (no persistent database). PDF report charts are table-based (no embedded
-    chart images). Vessel map uses simplified lat/lon coordinates.
+    All data is synthetic/simulated — no real port data.
+    Vessel map uses simplified lat/lon coordinates.
 
 artifacts:
   source_code: "backend/ frontend/"
