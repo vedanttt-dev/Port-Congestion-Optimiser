@@ -1,163 +1,156 @@
 import { useEffect, useState } from 'react';
 import { api, PredictResponse, downloadFile } from '../api';
-import {
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, ReferenceLine,
-} from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { Download, AlertTriangle, TrendingUp } from 'lucide-react';
 
 export default function PredictPage() {
   const [data, setData] = useState<PredictResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.predict()
-      .then(setData)
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    api.predict().then(setData).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="animate-pulse space-y-4">
-    <div className="h-8 w-48 rounded bg-port-panel" />
-    <div className="h-64 rounded-xl bg-port-panel" />
-  </div>;
+  if (loading) return (
+    <div className="space-y-6">
+      <div className="skeleton h-8 w-48 rounded-lg" />
+      <div className="grid gap-5 md:grid-cols-2"><div className="skeleton h-72 rounded-2xl" /><div className="skeleton h-72 rounded-2xl" /></div>
+      <div className="skeleton h-64 rounded-2xl" />
+    </div>
+  );
+  if (!data) return <p className="text-red-600 font-medium">Failed to load predictions</p>;
 
-  if (!data) return <p className="text-red-400">Failed to load predictions</p>;
-
-  const queueData = data.queue_forecast.map((q) => ({
-    time: `h${q.time_h.toFixed(0)}`,
-    queue: q.queue_length,
+  const queueData = data.queue_forecast.map((q: any) => ({
+    time: `h${(q.time_h ?? q.h ?? 0).toFixed(0)}`,
+    queue: q.queue_length ?? q.queue_size ?? 0,
   }));
 
-  const berthData = data.berth_util_forecast.map((b) => ({
-    time: `h${b.time_h.toFixed(0)}`,
-    util: b.util_pct,
-  }));
+  const berthTimeMap: Record<number, number[]> = {};
+  for (const b of data.berth_util_forecast) {
+    const buckets = (b as any).buckets ?? [b];
+    for (const bucket of buckets) {
+      const h = bucket.h ?? bucket.time_h ?? 0;
+      const util = bucket.util_pct ?? 0;
+      if (!berthTimeMap[h]) berthTimeMap[h] = [];
+      berthTimeMap[h].push(util);
+    }
+  }
+  const berthData = Object.entries(berthTimeMap)
+    .map(([h, utils]) => ({ time: `h${Number(h).toFixed(0)}`, util: Math.max(...utils) }))
+    .sort((a, b) => Number(a.time.slice(1)) - Number(b.time.slice(1)));
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-white">Congestion Prediction</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-port-text">Congestion Prediction</h2>
+          <p className="mt-1 text-sm text-port-muted">Forward simulation forecast and hotspot detection</p>
+        </div>
         <button
           onClick={() => downloadFile('/export/predict', 'predictions.csv')}
-          className="rounded-lg bg-port-accent/10 px-3 py-1.5 text-xs text-port-accent hover:bg-port-accent/20 transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-brand-600/20 transition-all hover:bg-brand-700 hover:shadow-md"
         >
+          <Download className="h-4 w-4" />
           Export CSV
         </button>
       </div>
 
-      {/* Hotspots */}
       {data.hotspots.length > 0 && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-4">
-          <h3 className="mb-3 font-medium text-red-400">⚠️ Hotspots Detected ({data.hotspots.length})</h3>
+        <div className="rounded-2xl border border-red-200 bg-red-50/60 p-5">
+          <div className="mb-3 flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <h3 className="font-semibold text-red-800">Hotspots Detected ({data.hotspots.length})</h3>
+          </div>
           <div className="space-y-2">
             {data.hotspots.map((h) => (
-              <div key={h.id} className="flex items-center gap-3 rounded-lg bg-port-bg/60 px-3 py-2 text-sm">
-                <span className={`h-2 w-2 rounded-full ${h.severity === 'high' ? 'bg-red-400' : 'bg-amber-400'}`} />
-                <span className="text-slate-300">{h.message}</span>
-                <span className="ml-auto text-xs text-slate-500">Lead: {h.lead_time_h}h | Berths: {h.affected_berths.join(', ')}</span>
+              <div key={h.id} className="flex items-center gap-3 rounded-xl bg-white/80 border border-red-100 px-4 py-2.5 text-sm">
+                <span className={`h-2 w-2 shrink-0 rounded-full ${h.severity === 'high' ? 'bg-red-500' : 'bg-amber-500'}`} />
+                <span className="text-slate-700">{h.message}</span>
+                <span className="ml-auto text-xs text-slate-500">Lead: {h.lead_time_h}h</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Charts row */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {/* Queue Forecast Chart */}
-        <div className="rounded-xl border border-port-line bg-port-panel p-4">
-          <h3 className="mb-3 text-sm font-medium text-white">Queue Forecast</h3>
+      <div className="grid gap-5 md:grid-cols-2">
+        <div className="rounded-2xl border border-port-line bg-port-panel p-5 shadow-card">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="h-4 w-4 text-brand-600" />
+            <h3 className="text-sm font-semibold text-port-text">Queue Forecast</h3>
+          </div>
           {queueData.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={queueData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e2a44" />
-                <XAxis dataKey="time" tick={{ fontSize: 10, fill: '#94a3b8' }} />
-                <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} />
-                <Tooltip
-                  contentStyle={{ background: '#111a2c', border: '1px solid #1e2a44', borderRadius: 8, fontSize: 12 }}
-                  labelStyle={{ color: '#e2e8f0' }}
-                />
-                <Line type="monotone" dataKey="queue" stroke="#38bdf8" strokeWidth={2} dot={false} name="Queue Length" />
-                <ReferenceLine y={5} stroke="#ef4444" strokeDasharray="5 5" label={{ value: 'Critical', fill: '#ef4444', fontSize: 10 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="time" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} />
+                <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
+                <Line type="monotone" dataKey="queue" stroke="#2563eb" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#2563eb' }} />
+                <ReferenceLine y={5} stroke="#ef4444" strokeDasharray="5 5" />
               </LineChart>
             </ResponsiveContainer>
-          ) : (
-            <p className="text-xs text-slate-500">No queue forecast data</p>
-          )}
+          ) : <p className="text-sm text-port-muted">No queue data</p>}
         </div>
 
-        {/* Berth Utilisation Chart */}
-        <div className="rounded-xl border border-port-line bg-port-panel p-4">
-          <h3 className="mb-3 text-sm font-medium text-white">Berth Utilisation Forecast</h3>
+        <div className="rounded-2xl border border-port-line bg-port-panel p-5 shadow-card">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="h-4 w-4 text-brand-600" />
+            <h3 className="text-sm font-semibold text-port-text">Berth Utilisation</h3>
+          </div>
           {berthData.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={berthData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e2a44" />
-                <XAxis dataKey="time" tick={{ fontSize: 10, fill: '#94a3b8' }} />
-                <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} domain={[0, 100]} />
-                <Tooltip
-                  contentStyle={{ background: '#111a2c', border: '1px solid #1e2a44', borderRadius: 8, fontSize: 12 }}
-                  labelStyle={{ color: '#e2e8f0' }}
-                  formatter={(value) => [`${Number(value).toFixed(0)}%`, 'Utilisation']}
-                />
-                <ReferenceLine y={85} stroke="#ef4444" strokeDasharray="5 5" label={{ value: '85%', fill: '#ef4444', fontSize: 10 }} />
-                <Bar dataKey="util" fill="#38bdf8" radius={[2, 2, 0, 0]} name="Berth Util %" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="time" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} domain={[0, 100]} />
+                <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} formatter={(value) => [`${Number(value).toFixed(0)}%`, 'Utilisation']} />
+                <ReferenceLine y={85} stroke="#ef4444" strokeDasharray="5 5" />
+                <Bar dataKey="util" fill="#2563eb" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          ) : (
-            <p className="text-xs text-slate-500">No berth utilisation data</p>
-          )}
+          ) : <p className="text-sm text-port-muted">No berth data</p>}
         </div>
       </div>
 
-      {/* Vessel forecasts table */}
-      <div className="rounded-xl border border-port-line bg-port-panel overflow-hidden">
-        <div className="flex items-center justify-between border-b border-port-line px-4 py-3">
-          <h3 className="text-sm font-medium text-white">Vessel Forecasts</h3>
-          <div className="flex gap-3 text-xs text-slate-400">
-            <span>Forecast: {data.vessel_forecasts.length} vessels</span>
-            <span className="text-red-400">Congested: {data.vessel_forecasts.filter((v) => v.status === 'congested').length}</span>
-          </div>
+      <div className="rounded-2xl border border-port-line bg-port-panel shadow-card overflow-hidden">
+        <div className="flex items-center justify-between border-b border-port-line px-5 py-3.5">
+          <h3 className="text-sm font-semibold text-port-text">Vessel Forecasts ({data.vessel_forecasts.length})</h3>
+          <span className="rounded-full bg-red-50 border border-red-200 px-2.5 py-0.5 text-xs font-medium text-red-700">
+            Congested: {data.vessel_forecasts.filter((v) => v.status === 'congested').length}
+          </span>
         </div>
         <table className="w-full">
           <thead>
-            <tr className="border-b border-port-line">
-              <th className="px-3 py-2 text-left text-xs text-slate-400">Vessel</th>
-              <th className="px-3 py-2 text-left text-xs text-slate-400">Type</th>
-              <th className="px-3 py-2 text-left text-xs text-slate-400">ETA</th>
-              <th className="px-3 py-2 text-left text-xs text-slate-400">Wait (h)</th>
-              <th className="px-3 py-2 text-left text-xs text-slate-400">Berth (h)</th>
-              <th className="px-3 py-2 text-left text-xs text-slate-400">TEU</th>
-              <th className="px-3 py-2 text-left text-xs text-slate-400">Status</th>
+            <tr className="border-b border-port-line bg-slate-50/80">
+              {['Vessel', 'Type', 'ETA', 'Wait (h)', 'Berth (h)', 'Status'].map((h) => (
+                <th key={h} className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">{h}</th>
+              ))}
             </tr>
           </thead>
-          <tbody>
-            {data.vessel_forecasts
-              .sort((a, b) => b.predicted_wait_h - a.predicted_wait_h)
-              .map((v) => (
-                <tr key={v.vessel_id} className="border-t border-port-line hover:bg-port-bg/40">
-                  <td className="px-3 py-2 text-sm text-white">{v.name}</td>
-                  <td className="px-3 py-2">
-                    <span className={`rounded-full px-2 py-0.5 text-xs ${
-                      v.type === 'mega' ? 'bg-purple-500/20 text-purple-400' :
-                      v.type === 'medium' ? 'bg-blue-500/20 text-blue-400' :
-                      'bg-slate-500/20 text-slate-400'
-                    }`}>{v.type}</span>
-                  </td>
-                  <td className="px-3 py-2 text-xs text-slate-300">{v.eta_h.toFixed(1)}h</td>
-                  <td className="px-3 py-2">
-                    <span className={`text-xs font-medium ${v.predicted_wait_h > 24 ? 'text-red-400' : v.predicted_wait_h > 12 ? 'text-amber-400' : 'text-slate-300'}`}>
-                      {v.predicted_wait_h.toFixed(1)}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2 text-xs text-slate-300">{v.predicted_berth_h.toFixed(1)}</td>
-                  <td className="px-3 py-2 text-xs text-slate-300">{v.teu_capacity.toLocaleString()}</td>
-                  <td className="px-3 py-2">
-                    <span className={`rounded-full px-2 py-0.5 text-xs ${
-                      v.status === 'congested' ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'
-                    }`}>{v.status}</span>
-                  </td>
-                </tr>
-              ))}
+          <tbody className="divide-y divide-port-line">
+            {data.vessel_forecasts.sort((a, b) => b.predicted_wait_h - a.predicted_wait_h).map((v) => (
+              <tr key={v.vessel_id} className="hover:bg-port-panelHover transition-colors">
+                <td className="px-4 py-2.5 text-sm font-medium text-port-text">{v.name}</td>
+                <td className="px-4 py-2.5">
+                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                    v.type === 'mega' ? 'bg-purple-50 text-purple-700 border border-purple-200' :
+                    v.type === 'medium' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                    'bg-slate-50 text-slate-600 border border-slate-200'
+                  }`}>{v.type}</span>
+                </td>
+                <td className="px-4 py-2.5 text-sm text-slate-600">{v.eta_h.toFixed(1)}h</td>
+                <td className="px-4 py-2.5">
+                  <span className={`text-sm font-semibold ${v.predicted_wait_h > 24 ? 'text-red-600' : v.predicted_wait_h > 12 ? 'text-amber-600' : 'text-slate-700'}`}>{v.predicted_wait_h.toFixed(1)}</span>
+                </td>
+                <td className="px-4 py-2.5 text-sm text-slate-600">{v.predicted_berth_h.toFixed(1)}</td>
+                <td className="px-4 py-2.5">
+                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                    v.status === 'congested' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                  }`}>{v.status}</span>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

@@ -27,15 +27,15 @@ export interface VesselSummary {
   name: string;
   type: string;
   teu_capacity: number;
-  arrival_h: number;
-  priority_class: number;
+  eta_h: number;
+  priority: number;
 }
 
 export interface DataSummary {
   meta: Record<string, unknown>;
   vessels: VesselSummary[];
-  berths: { id: string; name: string; length_m: number; max_draft_m: number }[];
-  cranes: { id: string; name: string; moves_per_h: number }[];
+  berths: { id: string; name: string; length_m: number; max_draft_m: number; crane_count: number }[];
+  cranes: { id: string; name: string; moves_per_h: number; berth_id: string }[];
   yard_zones: { id: string; name: string; teu_capacity: number; current_teu: number }[];
   alt_ports: { id: string; name: string }[];
 }
@@ -144,11 +144,34 @@ export interface KpisResponse {
   demurrage_cost_usd: number;
 }
 
+export interface VesselPosition {
+  id: string;
+  name: string;
+  lat: number;
+  lon: number;
+  state: string;
+  speed_kn: number;
+  heading: number;
+  berth_id: string | null;
+  vessel_type: string;
+  teu_capacity: number;
+}
+
+export interface LiveEvent {
+  time_h: number;
+  vessel_id: string;
+  event_type: string;
+  detail: string;
+}
+
 export interface LiveResponse {
   timestamp: string;
-  vessels: { id: string; name: string; status: string; position?: string }[];
-  recent_events: { type: string; vessel_id: string; time_h: number; detail: string }[];
-  kpis: KpisResponse;
+  sim_h?: number;
+  vessels: VesselPosition[];
+  queue_size?: number;
+  yard_util_pct?: number;
+  recent_events: LiveEvent[];
+  kpis: { avg_wait_h: number; demurrage_cost_usd: number };
 }
 
 export const api = {
