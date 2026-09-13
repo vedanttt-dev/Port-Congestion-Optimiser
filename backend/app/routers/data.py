@@ -10,7 +10,7 @@ from app.schemas import (
     YardSummary,
     VesselSummary,
 )
-from app.services.scenario import svc
+from app.services.scenario import get_active_scenario
 
 router = APIRouter(tags=["data"])
 
@@ -18,7 +18,7 @@ router = APIRouter(tags=["data"])
 @router.get("/data/summary", response_model=DataSummaryResponse)
 def data_summary() -> DataSummaryResponse:
     """Return the full scenario snapshot: vessels, berths, cranes, yard, ports."""
-    sc = svc.scenario
+    sc = get_active_scenario()
     meta = sc["meta"]
 
     vessels = [

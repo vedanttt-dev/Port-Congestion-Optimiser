@@ -6,6 +6,8 @@ import PredictPage from './pages/PredictPage';
 import OptimizePage from './pages/OptimizePage';
 import PlanPage from './pages/PlanPage';
 import LivePage from './pages/LivePage';
+import ScenarioPage from './pages/ScenarioPage';
+import ComparePage from './pages/ComparePage';
 
 export default function App() {
   return (
@@ -18,6 +20,8 @@ export default function App() {
           <Route path="optimize" element={<OptimizePage />} />
           <Route path="plan" element={<PlanPage />} />
           <Route path="live" element={<LivePage />} />
+          <Route path="scenario" element={<ScenarioPage />} />
+          <Route path="compare" element={<ComparePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -16,6 +16,16 @@ async function post<T>(path: string, body?: unknown): Promise<T> {
   return res.json();
 }
 
+async function del<T>(path: string): Promise<T> {
+  const res = await fetch(`${API}${path}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`DELETE ${path} → ${res.status}`);
+  return res.json();
+}
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
 export interface Health {
   status: string;
   simulator: string;
@@ -174,6 +184,85 @@ export interface LiveResponse {
   kpis: { avg_wait_h: number; demurrage_cost_usd: number };
 }
 
+// ---------------------------------------------------------------------------
+// Scenario types
+// ---------------------------------------------------------------------------
+
+export interface ScenarioSummary {
+  name: string;
+  seed: number;
+  weeks: number;
+  num_vessels: number;
+  num_berths: number;
+  num_cranes: number;
+  avg_wait_h: number | null;
+  demurrage_usd: number | null;
+}
+
+export interface ScenarioGenerateRequest {
+  name: string;
+  seed: number;
+  weeks: number;
+  num_berths?: number;
+  num_cranes?: number;
+}
+
+export interface ScenarioGenerateResponse {
+  name: string;
+  meta: Record<string, unknown>;
+  num_vessels: number;
+  num_berths: number;
+  num_cranes: number;
+  status: string;
+}
+
+export interface ScenarioCompareResponse {
+  scenario_a: {
+    name: string;
+    meta: Record<string, unknown>;
+    kpis: KpisResponse;
+  };
+  scenario_b: {
+    name: string;
+    meta: Record<string, unknown>;
+    kpis: KpisResponse;
+  };
+  deltas_pct: Record<string, number>;
+}
+
+// ---------------------------------------------------------------------------
+// WebSocket types
+// ---------------------------------------------------------------------------
+
+export interface WsUpdate {
+  type: 'update';
+  sim_h: number;
+  vessels: VesselPosition[];
+  events: LiveEvent[];
+  queue_size: number;
+  yard_util_pct: number;
+  status_counts?: Record<string, number>;
+  kpis: { avg_wait_h: number; demurrage_cost_usd: number };
+}
+
+export interface WsStatus {
+  type: 'status';
+  running: boolean;
+  sim_h: number;
+  horizon_h: number;
+  speed?: number;
+  message?: string;
+  num_vessels?: number;
+  num_berths?: number;
+  num_cranes?: number;
+}
+
+export type WsMessage = WsUpdate | WsStatus;
+
+// ---------------------------------------------------------------------------
+// API functions
+// ---------------------------------------------------------------------------
+
 export const api = {
   health: () => get<Health>('/health'),
   data: () => get<DataSummary>('/data/summary'),
@@ -182,7 +271,38 @@ export const api = {
   plan: (body?: unknown) => post<PlanResponse>('/plan', body),
   kpis: () => get<KpisResponse>('/kpis'),
   live: () => get<LiveResponse>('/live'),
+
+  // Scenario management
+  scenarioList: () => get<ScenarioSummary[]>('/scenario/list'),
+  scenarioGenerate: (body: ScenarioGenerateRequest) => post<ScenarioGenerateResponse>('/scenario/generate', body),
+  scenarioKpis: (name: string) => get<{ name: string; kpis: KpisResponse }>(`/scenario/${name}/kpis`),
+  scenarioCompare: (a: string, b: string) => post<ScenarioCompareResponse>('/scenario/compare', { scenario_a: a, scenario_b: b }),
+  scenarioSetActive: (name: string) => post<{ active: string }>('/scenario/set-active', { name }),
+  scenarioDelete: (name: string) => del<{ deleted: boolean }>(`/scenario/${name}`),
 };
+
+// ---------------------------------------------------------------------------
+// WebSocket helper
+// ---------------------------------------------------------------------------
+
+export function connectLiveSocket(onMessage: (msg: WsMessage) => void): WebSocket {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const host = window.location.host;
+  const ws = new WebSocket(`${protocol}//${host}/api/ws/live`);
+
+  ws.onmessage = (event) => {
+    try {
+      const msg: WsMessage = JSON.parse(event.data);
+      onMessage(msg);
+    } catch { /* ignore parse errors */ }
+  };
+
+  return ws;
+}
+
+// ---------------------------------------------------------------------------
+// Export helper
+// ---------------------------------------------------------------------------
 
 export function downloadFile(path: string, filename: string) {
   const a = document.createElement('a');

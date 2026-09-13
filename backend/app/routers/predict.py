@@ -16,7 +16,7 @@ from app.schemas import (
     VesselForecast,
     YardForecast,
 )
-from app.services.scenario import svc
+from app.services.scenario import get_active_scenario
 
 router = APIRouter(tags=["predict"])
 
@@ -95,7 +95,7 @@ def _build_forecasts(
 @router.post("/predict", response_model=PredictResponse)
 def predict(req: PredictRequest | None = None) -> PredictResponse:
     """Congestion forecast + hotspot alerts with lead times ≥ 12h."""
-    sc = svc.scenario
+    sc = get_active_scenario()
     as_of_h = req.as_of_h if req else 0.0
     horizon_h = req.horizon_h if req else 168.0
     return _build_forecasts(sc, as_of_h, horizon_h)

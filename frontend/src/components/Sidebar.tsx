@@ -6,6 +6,8 @@ import {
   Settings2,
   CalendarClock,
   Radar,
+  Beaker,
+  GitCompareArrows,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -15,6 +17,8 @@ const NAV_ITEMS = [
   { to: '/optimize', label: 'Optimiser', icon: Settings2 },
   { to: '/plan', label: 'Shift Plan', icon: CalendarClock },
   { to: '/live', label: 'Live Map', icon: Radar },
+  { to: '/scenario', label: 'Scenario Builder', icon: Beaker },
+  { to: '/compare', label: 'Compare', icon: GitCompareArrows },
 ] as const;
 
 export default function Sidebar() {

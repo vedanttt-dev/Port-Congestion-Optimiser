@@ -7,7 +7,7 @@ import math
 from fastapi import APIRouter
 
 from app.schemas import LiveEvent, LiveResponse, VesselPosition
-from app.services.scenario import svc
+from app.services.scenario import get_active_scenario, get_active_result, get_active_kpis
 
 router = APIRouter(tags=["live"])
 
@@ -68,9 +68,9 @@ def _vessel_position(vs, berths_map: dict) -> VesselPosition:
 @router.get("/live", response_model=LiveResponse)
 def live() -> LiveResponse:
     """Live simulation snapshot: vessel positions, queue, recent events."""
-    sc = svc.scenario
-    result = svc.get_result()
-    kpis = svc.get_kpis()
+    sc = get_active_scenario()
+    result = get_active_result()
+    kpis = get_active_kpis()
 
     berths_map = {b.id: b for b in sc["berths"]}
 

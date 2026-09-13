@@ -1,7 +1,8 @@
 """Orchestration service — loads scenario and runs sim on demand.
 
 Provides a singleton-style ``ScenarioService`` used by all routers so the
-scenario is loaded once and reused across requests.
+scenario is loaded once and reused across requests. Integrates with
+``ScenarioManager`` for what-if scenario support.
 """
 
 from __future__ import annotations
@@ -17,7 +18,10 @@ _DEFAULT_DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data
 
 
 class ScenarioService:
-    """Loads scenario data once, runs simulation lazily."""
+    """Loads scenario data once, runs simulation lazily.
+
+    Delegates to ScenarioManager when a non-default active scenario is set.
+    """
 
     def __init__(self) -> None:
         self._scenario: dict[str, Any] | None = None
@@ -44,6 +48,38 @@ class ScenarioService:
         self._scenario = None
         self._result = None
 
+    def set_scenario(self, scenario: dict[str, Any]) -> None:
+        """Set a new scenario and invalidate cached results."""
+        self._scenario = scenario
+        self._result = None
+
 
 # Module-level singleton
 svc = ScenarioService()
+
+
+def get_active_scenario() -> dict[str, Any]:
+    """Get the active scenario, checking ScenarioManager first."""
+    from app.services.scenario_manager import scenario_manager
+    active = scenario_manager.active
+    if active != "default":
+        return scenario_manager.get_scenario(active)
+    return svc.scenario
+
+
+def get_active_result() -> SimulationResult:
+    """Get the active simulation result, checking ScenarioManager first."""
+    from app.services.scenario_manager import scenario_manager
+    active = scenario_manager.active
+    if active != "default":
+        return scenario_manager.get_result(active)
+    return svc.get_result()
+
+
+def get_active_kpis():
+    """Get the active KPIs, checking ScenarioManager first."""
+    from app.services.scenario_manager import scenario_manager
+    active = scenario_manager.active
+    if active != "default":
+        return scenario_manager.get_kpis(active)
+    return svc.get_kpis()

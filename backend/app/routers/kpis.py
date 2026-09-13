@@ -3,7 +3,7 @@
 from fastapi import APIRouter
 
 from app.schemas import KpisResponse
-from app.services.scenario import svc
+from app.services.scenario import get_active_kpis
 
 router = APIRouter(tags=["kpis"])
 
@@ -11,7 +11,7 @@ router = APIRouter(tags=["kpis"])
 @router.get("/kpis", response_model=KpisResponse)
 def kpis() -> KpisResponse:
     """Aggregated simulation KPIs."""
-    kpi = svc.get_kpis()
+    kpi = get_active_kpis()
     return KpisResponse(
         avg_wait_h=kpi.avg_wait_h,
         p95_wait_h=kpi.p95_wait_h,

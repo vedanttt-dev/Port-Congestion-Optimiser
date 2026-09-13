@@ -13,7 +13,7 @@ from app.schemas import (
     OptimizeResponse,
     Reroute,
 )
-from app.services.scenario import svc
+from app.services.scenario import get_active_scenario, get_active_result
 
 router = APIRouter(tags=["optimize"])
 
@@ -36,8 +36,8 @@ def _compute_baseline_kpis(scenario, result) -> dict:
 @router.post("/optimize", response_model=OptimizeResponse)
 def optimize(req: OptimizeRequest | None = None) -> OptimizeResponse:
     """Run CP-SAT optimiser + rerouting recommender."""
-    sc = svc.scenario
-    result = svc.get_result()
+    sc = get_active_scenario()
+    result = get_active_result()
 
     # Baseline (FCFS)
     baseline_kpis = _compute_baseline_kpis(sc, result)

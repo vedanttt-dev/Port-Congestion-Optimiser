@@ -14,7 +14,7 @@ from fastapi.responses import StreamingResponse
 from app.optimization.solver import BerthCraneOptimiser
 from app.planning.shift_plan import ShiftPlanBuilder, shift_plan_to_csv
 from app.schemas import PlanRequest, PlanResponse, ShiftBlock, WorkOrder
-from app.services.scenario import svc
+from app.services.scenario import get_active_scenario
 
 router = APIRouter(tags=["plan"])
 
@@ -25,7 +25,7 @@ def _build_shift_plan(
     assignments: list | None = None,
 ) -> tuple[list[dict], list]:
     """Build shift plan, return (shifts_dicts, berth_assignments)."""
-    sc = svc.scenario
+    sc = get_active_scenario()
 
     # Get assignments from optimizer if not supplied
     if assignments is None:
