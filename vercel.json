@@ -1,28 +1,8 @@
 {
-  "services": {
-    "frontend": {
-      "root": "frontend",
-      "framework": "vite"
-    },
-    "backend": {
-      "root": "backend",
-      "entrypoint": "api/index.py"
-    }
-  },
   "rewrites": [
     {
-      "source": "/api(/.*)?",
-      "destination": {
-        "type": "service",
-        "service": "backend"
-      }
-    },
-    {
-      "source": "/(.*)",
-      "destination": {
-        "type": "service",
-        "service": "frontend"
-      }
+      "source": "/api/:path*",
+      "destination": "https://port-optimizer-api.onrender.com/api/:path*"
     }
   ]
 }
