@@ -124,9 +124,9 @@ export default function LivePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-port-text">Live Port Simulation</h2>
+          <h2 className="text-xl font-bold text-port-text sm:text-2xl">Live Port Simulation</h2>
           <p className="mt-1 text-sm text-port-muted">Real-time vessel movements via WebSocket streaming</p>
         </div>
         <div className="flex items-center gap-2">
@@ -144,7 +144,7 @@ export default function LivePage() {
 
       {/* Transport controls */}
       <div className="rounded-2xl border border-port-line bg-port-panel p-4 shadow-card">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <div className="flex items-center gap-1">
             <button
               onClick={running ? handlePause : handlePlay}
@@ -250,8 +250,8 @@ export default function LivePage() {
             ))}
           </div>
         </div>
-        <div className="max-h-64 overflow-y-auto">
-          <table className="w-full">
+          <div className="max-h-64 overflow-x-auto overflow-y-auto">
+            <table className="w-full min-w-[450px]">
             <thead>
               <tr className="border-b border-port-line bg-slate-50/80">
                 {['ID', 'Name', 'Status', 'Berth', 'Speed'].map((h) => (

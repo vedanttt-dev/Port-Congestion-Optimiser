@@ -45,7 +45,7 @@ export interface DataSummary {
   meta: Record<string, unknown>;
   vessels: VesselSummary[];
   berths: { id: string; name: string; length_m: number; max_draft_m: number; crane_count: number }[];
-  cranes: { id: string; name: string; moves_per_h: number; berth_id: string }[];
+  cranes: { id: string; max_moves_per_hr: number; compatible_berths: string[] }[];
   yard_zones: { id: string; name: string; teu_capacity: number; current_teu: number }[];
   alt_ports: { id: string; name: string }[];
 }
@@ -304,11 +304,20 @@ export function connectLiveSocket(onMessage: (msg: WsMessage) => void): WebSocke
 // Export helper
 // ---------------------------------------------------------------------------
 
-export function downloadFile(path: string, filename: string) {
-  const a = document.createElement('a');
-  a.href = `${API}${path}`;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+export async function downloadFile(path: string, filename: string) {
+  try {
+    const res = await fetch(`${API}${path}`);
+    if (!res.ok) throw new Error(`Download failed: ${res.status}`);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('Download error:', err);
+  }
 }

@@ -41,9 +41,9 @@ export default function PredictPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-port-text">Congestion Prediction</h2>
+          <h2 className="text-xl font-bold text-port-text sm:text-2xl">Congestion Prediction</h2>
           <p className="mt-1 text-sm text-port-muted">Forward simulation forecast and hotspot detection</p>
         </div>
         <button
@@ -120,7 +120,8 @@ export default function PredictPage() {
             Congested: {data.vessel_forecasts.filter((v) => v.status === 'congested').length}
           </span>
         </div>
-        <table className="w-full">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[500px]">
           <thead>
             <tr className="border-b border-port-line bg-slate-50/80">
               {['Vessel', 'Type', 'ETA', 'Wait (h)', 'Berth (h)', 'Status'].map((h) => (
@@ -153,6 +154,7 @@ export default function PredictPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, DataSummary, downloadFile } from '../api';
-import { Search, Download, ArrowUpDown, Container, Anchor, Truck, MapPin, Globe } from 'lucide-react';
+import { Search, Download, ArrowUpDown, Container, Anchor, Truck, Globe } from 'lucide-react';
 
 type SortDir = 'asc' | 'desc';
 
@@ -34,15 +34,11 @@ export default function DataPage() {
 
   if (!data) return <p className="text-red-600 font-medium">Failed to load data</p>;
 
-  const totalYardCap = data.yard_zones.reduce((s, z) => s + z.teu_capacity, 0);
-  const totalYardCur = data.yard_zones.reduce((s, z) => s + z.current_teu, 0);
-  const yardUtil = totalYardCap > 0 ? (totalYardCur / totalYardCap) * 100 : 0;
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-port-text">Scenario Data</h2>
+          <h2 className="text-xl font-bold text-port-text sm:text-2xl">Scenario Data</h2>
           <p className="mt-1 text-sm text-port-muted">Vessels, berths, cranes and yard inventory</p>
         </div>
         <button
@@ -72,8 +68,8 @@ export default function DataPage() {
             <Container className="h-4 w-4 text-brand-600" />
             <h3 className="text-sm font-semibold text-port-text">Vessels ({data.vessels.length})</h3>
           </div>
-          <div className="max-h-80 overflow-y-auto">
-            <table className="w-full">
+          <div className="max-h-80 overflow-x-auto overflow-y-auto">
+            <table className="w-full min-w-[400px]">
               <thead>
                 <tr className="border-b border-port-line bg-slate-50/80">
                   {['id', 'name', 'type', 'teu', 'priority'].map((c) => (
@@ -118,8 +114,8 @@ export default function DataPage() {
             <Anchor className="h-4 w-4 text-brand-600" />
             <h3 className="text-sm font-semibold text-port-text">Berths ({data.berths.length})</h3>
           </div>
-          <div className="max-h-80 overflow-y-auto">
-            <table className="w-full">
+          <div className="max-h-80 overflow-x-auto overflow-y-auto">
+            <table className="w-full min-w-[350px]">
               <thead>
                 <tr className="border-b border-port-line bg-slate-50/80">
                   <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">ID</th>
@@ -148,21 +144,21 @@ export default function DataPage() {
             <Truck className="h-4 w-4 text-brand-600" />
             <h3 className="text-sm font-semibold text-port-text">Cranes ({data.cranes.length})</h3>
           </div>
-          <div className="max-h-80 overflow-y-auto">
-            <table className="w-full">
+          <div className="max-h-80 overflow-x-auto overflow-y-auto">
+            <table className="w-full min-w-[400px]">
               <thead>
                 <tr className="border-b border-port-line bg-slate-50/80">
                   <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">ID</th>
                   <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Moves/h</th>
-                  <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Berth</th>
+                  <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Compatible Berths</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-port-line">
                 {data.cranes.map((c) => (
                   <tr key={c.id} className="hover:bg-port-panelHover transition-colors">
                     <td className="px-4 py-2.5 text-xs font-medium text-slate-500">{c.id}</td>
-                    <td className="px-4 py-2.5 text-sm text-port-text">{c.moves_per_h}</td>
-                    <td className="px-4 py-2.5 text-sm text-port-text">{c.berth_id}</td>
+                    <td className="px-4 py-2.5 text-sm text-port-text">{c.max_moves_per_hr}</td>
+                    <td className="px-4 py-2.5 text-xs text-slate-500">{c.compatible_berths.join(', ')}</td>
                   </tr>
                 ))}
               </tbody>
@@ -170,61 +166,30 @@ export default function DataPage() {
           </div>
         </div>
 
-        {/* Yard Zones */}
-        <div className="rounded-2xl border border-port-line bg-port-panel shadow-card overflow-hidden">
-          <div className="flex items-center justify-between border-b border-port-line px-5 py-3.5">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-brand-600" />
-              <h3 className="text-sm font-semibold text-port-text">Yard Zones ({data.yard_zones.length})</h3>
-            </div>
-            <span className="text-xs font-medium text-port-muted">{totalYardCur.toLocaleString()} / {totalYardCap.toLocaleString()} TEU ({yardUtil.toFixed(0)}%)</span>
-          </div>
-          <div className="h-1.5 w-full bg-slate-100">
-            <div className={`h-full rounded-full transition-all ${yardUtil > 85 ? 'bg-red-500' : yardUtil > 70 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${Math.min(100, yardUtil)}%` }} />
-          </div>
-          <div className="divide-y divide-port-line max-h-80 overflow-y-auto">
-            {data.yard_zones.map((z) => {
-              const util = z.teu_capacity > 0 ? (z.current_teu / z.teu_capacity) * 100 : 0;
-              return (
-                <div key={z.id} className="px-5 py-3 hover:bg-port-panelHover transition-colors">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm font-medium text-port-text">{z.name}</span>
-                    <span className="text-xs text-port-muted">{z.current_teu.toLocaleString()} / {z.teu_capacity.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <div className="h-1.5 flex-1 rounded-full bg-slate-100">
-                      <div className={`h-full rounded-full transition-all ${util > 85 ? 'bg-red-500' : util > 70 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${Math.min(100, util)}%` }} />
-                    </div>
-                    <span className={`text-xs font-semibold ${util > 85 ? 'text-red-600' : util > 70 ? 'text-amber-600' : 'text-emerald-600'}`}>{util.toFixed(0)}%</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
         {/* Alt Ports */}
-        <div className="rounded-2xl border border-port-line bg-port-panel shadow-card overflow-hidden md:col-span-2">
+        <div className="rounded-2xl border border-port-line bg-port-panel shadow-card overflow-hidden">
           <div className="flex items-center gap-2 border-b border-port-line px-5 py-3.5">
             <Globe className="h-4 w-4 text-brand-600" />
             <h3 className="text-sm font-semibold text-port-text">Alternative Ports ({data.alt_ports.length})</h3>
           </div>
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-port-line bg-slate-50/80">
-                <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">ID</th>
-                <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Name</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-port-line">
-              {data.alt_ports.map((p) => (
-                <tr key={p.id} className="hover:bg-port-panelHover transition-colors">
-                  <td className="px-4 py-2.5 text-xs font-medium text-slate-500">{p.id}</td>
-                  <td className="px-4 py-2.5 text-sm font-medium text-port-text">{p.name}</td>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[300px]">
+              <thead>
+                <tr className="border-b border-port-line bg-slate-50/80">
+                  <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">ID</th>
+                  <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Name</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-port-line">
+                {data.alt_ports.map((p) => (
+                  <tr key={p.id} className="hover:bg-port-panelHover transition-colors">
+                    <td className="px-4 py-2.5 text-xs font-medium text-slate-500">{p.id}</td>
+                    <td className="px-4 py-2.5 text-sm font-medium text-port-text">{p.name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

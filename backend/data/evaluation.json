@@ -1,0 +1,23 @@
+{
+  "scenario": {
+    "vessels": 112,
+    "berths": 8,
+    "cranes": 28
+  },
+  "baseline": {
+    "avg_wait_h": 18.31,
+    "p95_wait_h": 134.0,
+    "demurrage_cost_usd": 1411833.33,
+    "berth_util_pct": 58.6
+  },
+  "optimised": {
+    "avg_wait_h": 2.73,
+    "assignments": 91,
+    "solve_ms": 26.2
+  },
+  "reroutes": {
+    "count": 0,
+    "total_saving_usd": 0
+  },
+  "total_saving_usd": 1201330.6
+}

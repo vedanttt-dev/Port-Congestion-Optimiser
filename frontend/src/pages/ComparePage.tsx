@@ -37,8 +37,14 @@ export default function ComparePage() {
       .then((list) => {
         setScenarios(list);
         if (list.length >= 2) {
-          setSelectA(list[0].name);
-          setSelectB(list[1].name);
+          const aName = list.find((s) => s.name === 'default')?.name ?? list[0].name;
+          const bName = list.find((s) => s.name === 'light_traffic')?.name ?? list[1].name;
+          setSelectA(aName);
+          setSelectB(bName);
+          // Auto-compare default vs light_traffic
+          if (aName && bName && aName !== bName) {
+            api.scenarioCompare(aName, bName).then(setResult).catch(console.error);
+          }
         } else if (list.length === 1) {
           setSelectA(list[0].name);
         }

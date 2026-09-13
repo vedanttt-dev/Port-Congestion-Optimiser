@@ -43,3 +43,21 @@ html { scroll-behavior: smooth; }
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
+
+.main-overview-bg {
+  position: relative;
+}
+.main-overview-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/ship-berth.png');
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  pointer-events: none;
+}
+.main-overview-bg > * {
+  position: relative;
+  z-index: 1;
+}

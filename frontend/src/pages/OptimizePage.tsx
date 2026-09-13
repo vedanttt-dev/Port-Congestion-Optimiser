@@ -29,9 +29,9 @@ export default function OptimizePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-port-text">Berth &amp; Crane Optimiser</h2>
+          <h2 className="text-xl font-bold text-port-text sm:text-2xl">Berth &amp; Crane Optimiser</h2>
           <p className="mt-1 text-sm text-port-muted">CP-SAT constrained optimisation with reroute recommendations</p>
         </div>
         <button
@@ -79,7 +79,8 @@ export default function OptimizePage() {
             <Route className="h-4 w-4 text-brand-600" />
             <h3 className="text-sm font-semibold text-port-text">Reroute Recommendations ({data.reroutes.length})</h3>
           </div>
-          <table className="w-full">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[500px]">
             <thead>
               <tr className="border-b border-port-line bg-slate-50/80">
                 {['Vessel', 'Alt Port', 'Saving', 'Reason'].map((h) => (
@@ -98,6 +99,7 @@ export default function OptimizePage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

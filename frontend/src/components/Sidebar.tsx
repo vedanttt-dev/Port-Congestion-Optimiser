@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useSidebar } from './Layout';
 import {
   LayoutDashboard,
   Database,
@@ -22,14 +23,37 @@ const NAV_ITEMS = [
 ] as const;
 
 export default function Sidebar() {
+  const { open, toggle } = useSidebar();
+
   return (
-    <aside className="flex w-60 flex-col border-r border-port-line bg-port-panel py-5">
+    <>
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex w-60 flex-col border-r border-port-line bg-port-panel py-5">
+        <NavContent />
+      </aside>
+
+      {/* Mobile sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-port-line bg-port-panel py-5 shadow-xl transition-transform duration-300 lg:hidden ${
+          open ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <NavContent onNavigate={() => toggle()} />
+      </aside>
+    </>
+  );
+}
+
+function NavContent({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <>
       <nav className="flex flex-col gap-1 px-3">
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.to === '/'}
+            onClick={onNavigate}
             className={({ isActive }) =>
               `group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
                 isActive
@@ -63,6 +87,6 @@ export default function Sidebar() {
           </p>
         </div>
       </div>
-    </aside>
+    </>
   );
 }
