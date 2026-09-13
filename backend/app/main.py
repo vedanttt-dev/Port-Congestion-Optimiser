@@ -31,6 +31,28 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api")
 
 
+@app.on_event("startup")
+def _startup_generate_presets() -> None:
+    """Pre-generate default scenarios so they're available immediately."""
+    from app.services.scenario_manager import scenario_manager
+    from app.services.scenario import svc
+
+    # Ensure the default scenario exists
+    scenario_manager._scenarios["default"] = svc.scenario
+
+    # Generate preset scenarios
+    presets = [
+        {"name": "light_traffic", "seed": 123, "weeks": 2, "num_berths": 6, "num_cranes": 18},
+        {"name": "heavy_surge", "seed": 777, "weeks": 6, "num_berths": 8, "num_cranes": 25},
+        {"name": "crane_shortage", "seed": 42, "weeks": 4, "num_berths": 8, "num_cranes": 12},
+        {"name": "capacity_crunch", "seed": 42, "weeks": 4, "num_berths": 5, "num_cranes": 15},
+    ]
+
+    for p in presets:
+        if p["name"] not in scenario_manager._scenarios:
+            scenario_manager.generate(**p)
+
+
 @app.get("/", tags=["meta"])
 def root() -> dict:
     """Landing payload pointing to docs and the health probe."""

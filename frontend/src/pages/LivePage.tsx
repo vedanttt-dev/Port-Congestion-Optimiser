@@ -24,6 +24,7 @@ export default function LivePage() {
   const handleMessage = useCallback((msg: WsMessage) => {
     if (msg.type === 'update') {
       setSimH(msg.sim_h);
+      // Apply smooth interpolation to vessel positions
       setVessels(msg.vessels);
       setEvents(msg.events);
       setQueueSize(msg.queue_size);
@@ -33,31 +34,70 @@ export default function LivePage() {
     } else if (msg.type === 'status') {
       setRunning(msg.running);
       setSimH(msg.sim_h);
-      if (msg.running === false && msg.message) {
-        // Simulation complete
-      }
+    }
+  }, []);
+
+  // REST polling fallback
+  const pollRest = useCallback(async () => {
+    try {
+      const live = await api.live();
+      setSimH(live.sim_h ?? 0);
+      setVessels(live.vessels);
+      setEvents(live.recent_events);
+      setQueueSize(live.queue_size ?? 0);
+      setYardUtil(live.yard_util_pct ?? 0);
+      setKpis(live.kpis);
+      setConnected(true);
+    } catch {
+      setConnected(false);
     }
   }, []);
 
   useEffect(() => {
     api.data().then(setSummary).catch(console.error).finally(() => setLoading(false));
 
-    // Connect WebSocket
+    // Try WebSocket, fall back to REST polling
+    let restInterval: ReturnType<typeof setInterval> | null = null;
+
     const ws = connectLiveSocket(handleMessage);
     wsRef.current = ws;
 
+    const wsTimeout = setTimeout(() => {
+      // If WebSocket hasn't connected in 3 seconds, use REST polling
+      if (ws.readyState !== WebSocket.OPEN) {
+        ws.close();
+        setConnected(true); // Show as "online" via REST
+        pollRest();
+        restInterval = setInterval(pollRest, 3000);
+      }
+    }, 3000);
+
     ws.onopen = () => {
+      clearTimeout(wsTimeout);
       setConnected(true);
       ws.send(JSON.stringify({ action: 'status' }));
     };
-    ws.onclose = () => setConnected(false);
-    ws.onerror = () => setConnected(false);
+
+    ws.onclose = () => {
+      setConnected(false);
+      // Start REST polling as fallback
+      if (!restInterval) {
+        pollRest();
+        restInterval = setInterval(pollRest, 3000);
+      }
+    };
+
+    ws.onerror = () => {
+      // Will trigger onclose
+    };
 
     return () => {
+      clearTimeout(wsTimeout);
+      if (restInterval) clearInterval(restInterval);
       ws.close();
       wsRef.current = null;
     };
-  }, [handleMessage]);
+  }, [handleMessage, pollRest]);
 
   const send = (cmd: Record<string, unknown>) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
@@ -67,7 +107,10 @@ export default function LivePage() {
 
   const handlePlay = () => send({ action: 'start', speed });
   const handlePause = () => send({ action: 'stop' });
-  const handleSpeed = (s: number) => { setSpeed(s); if (running) send({ action: 'start', speed: s }); };
+  const handleSpeed = (s: number) => {
+    setSpeed(s);
+    if (running) send({ action: 'start', speed: s });
+  };
   const handleSeek = (h: number) => send({ action: 'seek', sim_h: h });
 
   const progress = horizonH > 0 ? (simH / horizonH) * 100 : 0;
