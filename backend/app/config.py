@@ -15,6 +15,8 @@ class Settings:
         default_factory=lambda: [
             "http://localhost:5173",
             "http://127.0.0.1:5173",
+            "https://port-optimizer.vercel.app",
+            "https://ship-management.vercel.app",
         ]
     )
 
