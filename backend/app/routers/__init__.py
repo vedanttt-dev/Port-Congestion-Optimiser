@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from app.routers import health, data, predict, optimize, plan, kpis, live
+from app.routers import health, data, predict, optimize, plan, kpis, live, export
 
 api_router = APIRouter()
 api_router.include_router(health.router)
@@ -12,3 +12,4 @@ api_router.include_router(optimize.router)
 api_router.include_router(plan.router)
 api_router.include_router(kpis.router)
 api_router.include_router(live.router)
+api_router.include_router(export.router)

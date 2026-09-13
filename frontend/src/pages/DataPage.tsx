@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api, DataSummary } from '../api';
+import { api, DataSummary, downloadFile } from '../api';
 
 type SortDir = 'asc' | 'desc';
 
@@ -42,7 +42,15 @@ export default function DataPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-white">Scenario Data</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-white">Scenario Data</h2>
+        <button
+          onClick={() => downloadFile('/export/data', 'vessels.csv')}
+          className="rounded-lg bg-port-accent/10 px-3 py-1.5 text-xs text-port-accent hover:bg-port-accent/20 transition-colors"
+        >
+          Export CSV
+        </button>
+      </div>
 
       {/* Search bar */}
       <div className="relative">

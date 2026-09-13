@@ -160,3 +160,12 @@ export const api = {
   kpis: () => get<KpisResponse>('/kpis'),
   live: () => get<LiveResponse>('/live'),
 };
+
+export function downloadFile(path: string, filename: string) {
+  const a = document.createElement('a');
+  a.href = `${API}${path}`;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}

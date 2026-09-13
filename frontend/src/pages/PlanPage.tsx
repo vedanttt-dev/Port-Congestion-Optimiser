@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api, PlanResponse, ShiftBlock } from '../api';
+import { api, PlanResponse, ShiftBlock, downloadFile } from '../api';
 
 export default function PlanPage() {
   const [data, setData] = useState<PlanResponse | null>(null);
@@ -31,7 +31,7 @@ export default function PlanPage() {
   };
 
   const handleExport = () => {
-    window.open('/api/plan/export', '_blank');
+    downloadFile('/export/plan', 'shift_plan.csv');
   };
 
   if (loading) return <div className="animate-pulse space-y-4">

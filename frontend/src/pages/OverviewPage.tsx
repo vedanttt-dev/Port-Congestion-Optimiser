@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api, KpisResponse, PredictResponse } from '../api';
+import { api, KpisResponse, PredictResponse, downloadFile } from '../api';
 
 export default function OverviewPage() {
   const [kpis, setKpis] = useState<KpisResponse | null>(null);
@@ -17,7 +17,15 @@ export default function OverviewPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-white">Dashboard Overview</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-white">Dashboard Overview</h2>
+        <button
+          onClick={() => downloadFile('/export/report', 'port_congestion_report.txt')}
+          className="rounded-lg bg-port-accent/10 px-3 py-1.5 text-xs text-port-accent hover:bg-port-accent/20 transition-colors"
+        >
+          Export Report
+        </button>
+      </div>
 
       {kpis && (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

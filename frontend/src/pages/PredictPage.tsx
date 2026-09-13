@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api, PredictResponse } from '../api';
+import { api, PredictResponse, downloadFile } from '../api';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, ReferenceLine,
@@ -35,7 +35,15 @@ export default function PredictPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-white">Congestion Prediction</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-white">Congestion Prediction</h2>
+        <button
+          onClick={() => downloadFile('/export/predict', 'predictions.csv')}
+          className="rounded-lg bg-port-accent/10 px-3 py-1.5 text-xs text-port-accent hover:bg-port-accent/20 transition-colors"
+        >
+          Export CSV
+        </button>
+      </div>
 
       {/* Hotspots */}
       {data.hotspots.length > 0 && (

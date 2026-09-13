@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api, OptimizeResponse } from '../api';
+import { api, OptimizeResponse, downloadFile } from '../api';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend,
@@ -34,7 +34,15 @@ export default function OptimizePage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-white">Berth &amp; Crane Optimiser</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-white">Berth &amp; Crane Optimiser</h2>
+        <button
+          onClick={() => downloadFile('/export/optimize', 'optimiser.csv')}
+          className="rounded-lg bg-port-accent/10 px-3 py-1.5 text-xs text-port-accent hover:bg-port-accent/20 transition-colors"
+        >
+          Export CSV
+        </button>
+      </div>
 
       {/* Savings banner */}
       {optimized.cost_saved_usd !== undefined && optimized.cost_saved_usd > 0 && (
