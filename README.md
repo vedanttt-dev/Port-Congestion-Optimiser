@@ -1,143 +1,155 @@
 # Container Congestion Predictor & Port Operations Optimiser
 
-Hackathon solution that predicts port congestion hotspots **before** queues form,
-recommends alternate routing, optimises berth + crane assignments via CP-SAT, and
-generates a **72-hour port operations plan** for shift supervisors — with a live
-"Mission Control" dashboard.
+> A full-stack AI-powered dashboard that predicts port congestion, optimises berth/crane assignments via CP-SAT, and generates 72-hour shift plans — with live WebSocket simulation streaming.
 
-> Full roadmap, architecture, data model and API contract: [`plan.md`](./plan.md)
+---
 
-## Results
+## Team
 
-| Metric | Baseline (FCFS) | Optimised (CP-SAT) | Change |
-|---|---|---|---|
-| Avg Wait | 18.3 h | 2.7 h | **-85%** |
-| P95 Wait | 134.0 h | 4.9 h | **-96%** |
-| Demurrage Cost | $1,411,833 | $210,503 | **-85%** |
-| **Total Savings** | | | **$1,201,331** |
+| Field | Value |
+|---|---|
+| **Team Name** | Infinite Loop |
+| **Track** | AI |
+| **Team Lead** | Prajapati Vedant — vedanttt.dev@gmail.com |
+| **Members** | Rana Harsh, Savaliya Harshit, Patel Manav |
 
-- 91 vessel assignments across 8 berths (CP-SAT, 26ms solve time)
-- 3 hotspots detected with lead times for proactive response
-- 9 shift blocks with 21 work orders for 72-hour operations plan
+---
 
-## Architecture
+## Problem Statement
+
+> Container ports worldwide face increasing congestion, costing the shipping industry $10B+ annually in demurrage fees. Port operations teams rely on manual spreadsheets and first-come-first-served scheduling, failing to optimise berth allocation, crane deployment, or predict congestion before it cascades into costly delays.
+
+---
+
+## Solution
+
+> A full-stack web application combining discrete event simulation, CP-SAT constraint optimization, Monte Carlo forward prediction, and 72-hour shift planning into a single tablet-friendly dashboard. Port managers can run what-if scenarios, compare infrastructure investments, and download professional PDF reports — all in real-time via WebSocket streaming.
+
+---
+
+## Key Features
+
+- **CP-SAT Optimization:** Berth & crane assignment reducing wait times by 20-40% vs FCFS baseline
+- **Congestion Prediction:** Monte Carlo forward simulation with vessel-level forecasts and hotspot detection
+- **Scenario Builder:** 5 presets (Light Traffic, Heavy Surge, Crane Shortage, etc.) + custom parameters
+- **What-If Comparison:** Side-by-side scenario comparison with KPI deltas and grouped bar charts
+- **Live Simulation:** Real-time WebSocket streaming with satellite vessel map and transport controls
+- **72-Hour Shift Plan:** Automated work order generation with contingency notes
+- **PDF Report:** One-click executive summary download with tables and formatted sections
+- **Mobile-Friendly:** Responsive layout with hamburger navigation for tablet demos
+
+---
+
+## Tech Stack
+
+| Category | Technologies |
+|---|---|
+| **Languages** | Python 3.12, TypeScript |
+| **Frameworks** | FastAPI, React 18, Vite, Tailwind CSS |
+| **AI / Optimization** | Google OR-Tools (CP-SAT), SimPy (DES), Monte Carlo Simulation |
+| **Visualization** | Recharts, MapLibre GL, Lucide React |
+| **Other** | WebSocket, ReportLab (PDF), GitHub Actions |
+
+---
+
+## Repository Structure
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                   React + Vite Frontend                  │
-│  Overview │ Data │ Predict │ Optimise │ Plan │ Live Map  │
-└──────────┬──────────────────────────────────────────────┘
-           │ /api/* (Vite proxy)
-┌──────────▼──────────────────────────────────────────────┐
-│                   FastAPI Backend                        │
-│  /data/summary  /predict  /optimize  /plan  /live  /kpis│
-│  /export/data   /export/predict  /export/optimize        │
-│  /export/plan   /export/report                          │
-└──────────┬──────────────────────────────────────────────┘
-           │
-┌──────────▼──────────────────────────────────────────────┐
-│                   Engine Layer                           │
-│  Synthetic Generator → DES Simulation (simpy)            │
-│  → Forward Predictor → Hotspot Detector                  │
-│  → CP-SAT Optimiser → Rerouting Recommender              │
-│  → 72h Shift Plan Builder                                │
-└─────────────────────────────────────────────────────────┘
+├── backend/                # Python FastAPI backend
+│   ├── app/                # Application source code
+│   │   ├── routers/        # 12 API endpoints + WebSocket
+│   │   ├── services/       # Scenario management
+│   │   ├── simulation/     # SimPy DES engine + KPI
+│   │   ├── optimization/   # CP-SAT solver + rerouting
+│   │   ├── prediction/     # Forward simulator + hotspots
+│   │   └── planning/       # 72-hour shift builder
+│   ├── tests/              # 154 pytest tests
+│   └── requirements.txt
+├── frontend/               # React + Vite + TypeScript
+│   ├── src/
+│   │   ├── pages/          # 8 page components
+│   │   ├── components/     # Layout, Sidebar, PortMap, etc.
+│   │   └── api.ts          # Typed API client
+│   ├── public/             # Static assets
+│   └── package.json
+├── docs/                   # Written documentation
+│   ├── problem-statement.md
+│   ├── solution-overview.md
+│   ├── architecture.md
+│   └── setup-guide.md
+├── demo/                   # Demo artifacts
+│   ├── screenshots/        # App screenshots
+│   └── demo-video-link.txt
+├── presentation/           # Slide deck
+└── submission.yaml         # Structured submission metadata
 ```
 
-## Quickstart
+---
 
-### Backend (Python 3.12 + FastAPI)
+## How to Run
 
-```powershell
+> **See [`docs/setup-guide.md`](docs/setup-guide.md) for detailed instructions.**
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/vedanttt-dev/ship-management.git
+cd ship-management
+
+# 2. Install backend dependencies
 cd backend
 python -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt
-.venv\Scripts\python -m uvicorn app.main:app --reload --port 8000
-# health → http://127.0.0.1:8000/api/health
-# docs   → http://127.0.0.1:8000/docs
-```
+.venv\Scripts\activate
+pip install -r requirements.txt
 
-### Frontend (React 18 + Vite + TypeScript + Tailwind)
-
-```powershell
-cd frontend
+# 3. Install frontend dependencies
+cd ../frontend
 npm install
+
+# 4. Start the backend (Terminal 1)
+cd backend
+uvicorn app.main:app --reload --port 8000
+
+# 5. Start the frontend (Terminal 2)
+cd frontend
 npm run dev
-# app → http://localhost:5173 (proxies /api/* to backend on :8000)
 ```
 
-## API Endpoints
+Open **http://localhost:5173** in your browser.
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/health` | Health check |
-| GET | `/api/data/summary` | Scenario data (vessels, berths, cranes, yard, alt ports) |
-| POST | `/api/predict` | 7-day congestion prediction with hotspot detection |
-| POST | `/api/optimize` | CP-SAT berth+crane optimiser + reroute recommendations |
-| POST | `/api/plan` | 72-hour shift plan (9 blocks, work orders, contingencies) |
-| GET | `/api/kpis` | Key performance indicators |
-| GET | `/api/live` | Live port status (polling) |
-| GET | `/api/export/data` | CSV export — vessels |
-| GET | `/api/export/predict` | CSV export — predictions |
-| GET | `/api/export/optimize` | CSV export — optimiser results |
-| GET | `/api/export/plan` | CSV export — shift plan |
-| GET | `/api/export/report` | Full text report |
+---
 
-## Stack
+## Demo
 
-| Layer | Tech |
+| Artifact | Link |
 |---|---|
-| Simulation | simpy (discrete-event simulation) |
-| Optimisation | Google OR-Tools CP-SAT |
-| Prediction | Forward simulation + hotspot rules |
-| API | FastAPI + Pydantic |
-| Frontend | React 18 + Vite + TypeScript + Tailwind |
-| Charts | Recharts |
+| Demo Video | [See demo/demo-video-link.txt](demo/demo-video-link.txt) |
+| Live Demo | [port-optimizer.vercel.app](https://port-optimizer.vercel.app) |
+| Screenshots | [See demo/screenshots/](demo/screenshots/) |
+| Presentation | [See presentation/](presentation/) |
 
-## Project Structure
+---
 
+## Known Limitations
+
+- Authentication is not implemented (hackathon scope)
+- All data is synthetic/simulated — no real port data
+- Backend holds state in memory (no persistent database)
+- PDF report uses table-based layout (no embedded chart images)
+- Vessel map uses simplified lat/lon coordinates
+- WebSocket reconnection not auto-handled on network drop
+
+---
+
+## What We're Most Proud Of
+
+The integrated optimization pipeline — from scenario generation through DES simulation, CP-SAT solving, reroute recommendations, and shift planning — all computed in under 2 seconds and presented in a polished dashboard with live WebSocket streaming. The what-if comparison engine lets managers evaluate infrastructure investments interactively.
+
+---
+
+## Tests
+
+```bash
+cd backend
+python -m pytest tests/ -v
+# 154 tests passing
 ```
-ship-management/
-├── backend/
-│   ├── app/
-│   │   ├── main.py                 # FastAPI entry point
-│   │   ├── config.py               # Settings
-│   │   ├── schemas.py              # Pydantic request/response models
-│   │   ├── domain/entities.py      # 10 dataclasses (Vessel, Berth, Crane, etc.)
-│   │   ├── data/generator.py       # Synthetic scenario generator
-│   │   ├── simulation/
-│   │   │   ├── engine.py           # simpy DES engine
-│   │   │   └── kpi.py              # KPI computation + CSV export
-│   │   ├── prediction/
-│   │   │   ├── forecaster.py       # Forward simulation predictor
-│   │   │   └── hotspots.py         # Hotspot detection rules
-│   │   ├── optimization/
-│   │   │   ├── solver.py           # CP-SAT berth+crane optimiser
-│   │   │   └── rerouting.py        # Rerouting recommender
-│   │   ├── planning/shift_plan.py  # 72h shift builder
-│   │   ├── routers/                # 8 API routers (data, predict, optimize, etc.)
-│   │   └── services/scenario.py    # Singleton scenario service
-│   ├── tests/                      # 154 tests
-│   └── scripts/
-│       ├── generate_data.py        # CLI: generate synthetic data
-│       ├── run_baseline.py         # CLI: run baseline FCFS sim
-│       └── evaluate.py             # CLI: full evaluation report
-├── frontend/
-│   ├── src/
-│   │   ├── api.ts                  # Typed API client
-│   │   ├── components/             # Layout, Header, Sidebar, StatusBadge
-│   │   └── pages/                  # 6 screens (Overview, Data, Predict, etc.)
-│   └── vite.config.ts              # Vite proxy to backend
-├── plan.md                         # Full 13-phase roadmap
-└── README.md
-```
-
-## How It Works
-
-1. **Generate** — Synthetic vessel arrivals, berths, cranes, yard zones, alt ports
-2. **Simulate** — Baseline FCFS simulation computes anchor wait, berth util, demurrage
-3. **Predict** — Forward 7-day simulation detects congestion hotspots with lead times
-4. **Optimise** — CP-SAT solver assigns vessels to berths, minimising total wait
-5. **Reroute** — Cost model recommends alt-port diversion when waiting > divert cost
-6. **Plan** — 72h shift plan with 9 blocks, work orders, alerts, contingency notes
-7. **Export** — CSV/text download from every screen

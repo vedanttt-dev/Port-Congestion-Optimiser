@@ -1,0 +1,72 @@
+# =============================================================================
+# HACKATHON SUBMISSION METADATA
+# =============================================================================
+
+team:
+  name: "Infinite Loop"
+  track: "AI"
+  lead:
+    name: "Prajapati Vedant"
+    email: "vedanttt.dev@gmail.com"
+  members:
+    - name: "Prajapati Vedant"
+      email: "vedanttt.dev@gmail.com"
+    - name: "Rana Harsh"
+      email: "harshrana0299@gmail.com"
+    - name: "Savaliya Harshit"
+      email: "harshitsavaliya99@gmail.com"
+    - name: "Patel Manav"
+      email: ""
+
+submission:
+  title: "Container Congestion Predictor & Port Operations Optimiser"
+
+  problem_statement: >
+    Container ports worldwide face increasing congestion, costing the shipping
+    industry $10B+ annually in demurrage fees. Port operations teams rely on
+    manual spreadsheets and first-come-first-served scheduling, failing to
+    optimise berth allocation, crane deployment, or predict congestion before
+    it cascades into costly delays.
+
+  solution_summary: >
+    A full-stack web application combining discrete event simulation, CP-SAT
+    constraint optimization, Monte Carlo forward prediction, and 72-hour shift
+    planning into a single tablet-friendly dashboard. Port managers can run
+    what-if scenarios, compare infrastructure investments, and download
+    professional PDF reports — all in real-time via WebSocket streaming.
+
+  key_features:
+    - "CP-SAT berth & crane optimization reducing wait times by 20-40% vs FCFS baseline"
+    - "Monte Carlo forward simulation for congestion hotspot detection with vessel-level forecasts"
+    - "Interactive scenario builder with 5 presets and custom parameter controls"
+    - "What-if scenario comparison with side-by-side KPI deltas and grouped bar charts"
+    - "Real-time WebSocket live simulation with satellite vessel map and transport controls"
+
+  tech_stack:
+    languages: ["Python 3.12", "TypeScript"]
+    frameworks: ["FastAPI", "React 18", "Vite", "Tailwind CSS"]
+    ibm_technologies: []
+    databases: []
+    other: ["SimPy", "Google OR-Tools (CP-SAT)", "Recharts", "MapLibre GL", "ReportLab", "WebSocket"]
+
+  what_we_are_most_proud_of: >
+    The integrated optimization pipeline — from scenario generation through
+    DES simulation, CP-SAT solving, reroute recommendations, and shift
+    planning — all computed in under 2 seconds and presented in a polished
+    dashboard with live WebSocket streaming. The what-if comparison engine
+    lets managers evaluate infrastructure investments interactively.
+
+  known_limitations: >
+    Authentication is not implemented (hackathon scope). All data is
+    synthetic/simulated — no real port data. Backend holds state in memory
+    (no persistent database). PDF report charts are table-based (no embedded
+    chart images). Vessel map uses simplified lat/lon coordinates.
+
+artifacts:
+  source_code: "backend/ frontend/"
+  setup_guide: "docs/setup-guide.md"
+  architecture_doc: "docs/architecture.md"
+  demo_video: "demo/demo-video-link.txt"
+  live_demo: "demo/live-demo-url.txt"
+  screenshots: "demo/screenshots/"
+  presentation: "presentation/"
