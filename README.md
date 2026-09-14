@@ -122,7 +122,7 @@ Open **http://localhost:5173** in your browser.
 | Artifact | Link |
 |---|---|
 | Demo Video | [See demo/demo-video-link.txt](demo/demo-video-link.txt) |
-| Live Demo | [port-optimizer.vercel.app](https://port-optimizer.vercel.app) |
+| Live Demo | [port-congestion-optimiser-theta.vercel.app](https://port-congestion-optimiser-theta.vercel.app) |
 | Screenshots | [See demo/screenshots/](demo/screenshots/) |
 | Presentation | [See presentation/](presentation/) |
 

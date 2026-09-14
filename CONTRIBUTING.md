@@ -34,7 +34,7 @@ Four documentation files completed:
 
 ### 2e. `demo/` — Demo Artifacts
 - `demo/demo-video-link.txt` — Add your demo video URL
-- `demo/live-demo-url.txt` — Live demo at port-optimizer.vercel.app
+- `demo/live-demo-url.txt` — Live demo at port-congestion-optimiser-theta.vercel.app
 - `demo/screenshots/` — Add 3+ screenshots
 
 ### 2f. `presentation/` — Slide Deck
