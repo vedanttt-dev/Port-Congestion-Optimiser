@@ -30,8 +30,6 @@ app.add_middleware(
 
 app.include_router(api_router, prefix="/api")
 
-print(f"Registered routes: {[r.path for r in app.routes]}")
-
 
 @app.on_event("startup")
 def _startup_generate_presets() -> None:
