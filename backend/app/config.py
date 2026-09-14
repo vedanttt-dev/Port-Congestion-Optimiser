@@ -17,7 +17,7 @@ class Settings:
             "http://127.0.0.1:5173",
             "https://port-optimizer.vercel.app",
             "https://ship-management.vercel.app",
-            "https://port-optimizer-api.onrender.com",
+            "https://port-congestion-optimiser.onrender.com",
         ]
     )
 
