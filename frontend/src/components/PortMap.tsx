@@ -76,7 +76,7 @@ function ShipIcon({ v }: { v: VesselPosition }) {
         height={size * 1.8}
         viewBox="0 0 20 36"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ display: 'block' }}
+        style={{ display: 'block', background: 'transparent' }}
       >
         {/* Wake effect when moving */}
         {v.speed_kn > 1 && (
