@@ -78,7 +78,7 @@
 │   └── setup-guide.md
 ├── demo/                   # Demo artifacts
 │   ├── screenshots/        # App screenshots
-│   └── demo-video-link.txt
+│   └── demo-video.mp4
 ├── presentation/           # Slide deck
 └── submission.yaml         # Structured submission metadata
 ```
@@ -121,7 +121,7 @@ Open **http://localhost:5173** in your browser.
 
 | Artifact | Link |
 |---|---|
-| Demo Video | [See demo/demo-video-link.txt](demo/demo-video-link.txt) |
+| Demo Video | [demo-video.mp4](demo/demo-video.mp4) |
 | Live Demo | [port-congestion-optimiser-theta.vercel.app](https://port-congestion-optimiser-theta.vercel.app) |
 | Screenshots | [See demo/screenshots/](demo/screenshots/) |
 | Presentation | [See presentation/](presentation/) |

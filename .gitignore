@@ -61,7 +61,7 @@ desktop.ini
 *.sublime-workspace
 
 # ── Large Media Files ─────────────────────────────────────────────────────────
-demo/*.mp4
+!demo/demo-video.mp4
 demo/*.mov
 demo/*.avi
 demo/*.mkv

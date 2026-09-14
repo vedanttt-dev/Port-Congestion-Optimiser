@@ -48,7 +48,7 @@ Four documentation files completed:
 - [ ] `README.md` — no `[placeholder]` text remaining
 - [ ] `docs/setup-guide.md` — someone else can run your project
 - [ ] `backend/` + `frontend/` — all source code committed
-- [ ] `demo/demo-video-link.txt` — real video URL (3–5 min)
+- [x] `demo/demo-video.mp4` — demo video present
 - [ ] `demo/screenshots/` — at least 3 screenshots
 - [ ] `presentation/slides.pdf` — slide deck present
 - [ ] Repository is **Public**
