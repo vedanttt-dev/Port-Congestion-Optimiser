@@ -38,7 +38,7 @@ Four documentation files completed:
 - `demo/screenshots/` — Add 3+ screenshots
 
 ### 2f. `presentation/` — Slide Deck
-- Add your slide deck as `presentation/slides.pdf`
+- Add your slide deck as `presentation/slides.pptx`
 
 ---
 
@@ -50,5 +50,5 @@ Four documentation files completed:
 - [ ] `backend/` + `frontend/` — all source code committed
 - [x] `demo/demo-video.mp4` — demo video present
 - [ ] `demo/screenshots/` — at least 3 screenshots
-- [ ] `presentation/slides.pdf` — slide deck present
+- [x] `presentation/slides.pptx` — slide deck present
 - [ ] Repository is **Public**
